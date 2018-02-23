@@ -58,14 +58,14 @@ class multiTreadServer implements Runnable
             int x = theUrl.indexOf('/');  //gets posistion of /
             theUrl = theUrl.substring(x+1);  //creates substring at the end of /
             String filename = "";
-            if(theUrl.equals(null))
-            {
-                filename = "U:\\ComNetsWebServ\\myHTML.html";
-            }
-            else
-            {
+//            if(theUrl.equals(null))
+//            {
+//               filename = "U:\\ComNetsWebServ\\myHTML.html";
+//            }
+//            else
+//            {
                 filename = "U:\\ComNetsWebServ\\" + theUrl;
-            }
+            //}
 //System.out.println(filename);
             FileInputStream fis = new FileInputStream(filename);
 System.out.println(theUrl);
