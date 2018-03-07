@@ -22,7 +22,7 @@ public class Project extends HttpServlet //Extends HttpServlet to handle HTTP ge
         //Returns the value of a request parameter as a String, or null if the parameter does not exist.
         String name = req.getParameter("filename");
 
-        BufferedReader br = new BufferedReader(new FileReader(name));//C:\\Users\\Kieran\\Desktop\\TomcatPi\\web\\WEB-INF\\"+name+""
+        BufferedReader br = new BufferedReader(new FileReader(name)); //C:\\Users\\Kieran\\Desktop\\TomcatPi\\web\\WEB-INF\\"+name+""
 
         String str;
        // reads every line of the file
