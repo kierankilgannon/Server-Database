@@ -72,6 +72,15 @@ public class ServletShowResults extends HttpServlet {
             out.println("</head>");
 
             out.println("<body>");
+            out.println("<table border = \"1\" width = \"100%\">\n" +
+                    "                  <tr>\n" +
+                    "                     <th>ID</th>\n" +
+                    "                     <th>Unit no</th>\n" +
+                    "                     <th>trip level</th>\n" +
+                    "                     <th>Trip time</th>\n" +
+                    "                     <th>Result</th>\n" +
+                    "                     <th>Date</th>\n" +
+                    "                  </tr></table>");
 
             while (resultSet.next())
             {  //"SELECT  ID, unitNum, tripLevel, tripTime, result, myDate FROM testResults");
@@ -84,16 +93,17 @@ public class ServletShowResults extends HttpServlet {
 
                 String myDate1[] = myDate.split(" ");
                 arrli.add(Integer.parseInt((tripTime)));
-
-                out.print("<br>"+" <strong>ID:</strong>" + ID + "   ");
-                out.print("  <strong>Unit Number:</strong>" + unitNum + "   ");
-                out.print("  <strong>Trip Level:</strong>" + tripLevel + "   ");
-                out.print("   <strong>Trip Time:</strong>" + tripTime + "   ");
-                out.print("   <strong>Result:</strong>" + result + "   ");
-                out.print("   <strong>Date Tested:</strong>" + myDate1[0] + "   ");
-
+                out.print("<table border = \"1\" width = \"100%\">\n");
+                out.print("                     <tr><td>    " + ID + "  </td> \n");
+                out.print("                     <td>       " + unitNum + " </td>  \n");
+                out.print("                     <td>       "+ tripLevel + " </td>  \n");
+                out.print("                     <td>" + tripTime + " </td>  \n");
+                out.print("                     <td>" + result + "  </td> \n");
+                out.print("                     <td>" + myDate1[0] + " </td> </tr> \n");
+                out.print("</table>\n");
 
             }
+
             out.println("<script>\n" +
                     "        window.onload = function () {\n" +
                     "\n" +
@@ -117,10 +127,10 @@ public class ServletShowResults extends HttpServlet {
                     "                    axisYType: \"secondary\",\n" +
                     "                    color: \"#014D65\",\n" +
                     "                    dataPoints: [\n" +"");
-                    for(int i = 0; i < arrli.size(); i++) {
-                        out.print("                        { y: " + arrli.get(i) + ", label: \"UNIT NO.\" },\n" + "");
+                    for(int i = 0; i < arrli.size(); i++)
+                    {
+                        out.print("{ y: " + arrli.get(i) + ", label: \"UNIT NO.\" },\n" + "");
                     }
-
                     out.print(
                     "                    ]\n" +
                     "                }]\n" +
