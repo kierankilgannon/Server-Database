@@ -3,6 +3,7 @@
 
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -12,33 +13,39 @@ import javax.servlet.http.*;
 public class ServletShowResults extends HttpServlet {
     private Connection connection;
     private PreparedStatement  read;
-    String FIRST_NAME;
-    String LAST_NAME;
-    int AGE;
-    String SEX;
-    int INCOME;
-    //String comments;
-    int idNum;
+    int ID;
+    String unitNum;
+    String tripLevel;
+    String tripTime;
+    String result;
+    String myDate;
+    int N = 10;
 
-    public void init( ServletConfig config )
-            throws ServletException
+
+
+
+    public void init( ServletConfig config ) throws ServletException
     {
-        try {
+        try
+        {
             Class.forName("com.mysql.jdbc.Driver");  // load the driver
             String url = "jdbc:mysql://mydbinstance.cbooiucez8xp.eu-west-1.rds.amazonaws.com:3306/TESTDB?autoReconnect=true&useSSL=false";
             connection = DriverManager.getConnection("jdbc:mysql://mydbinstance.cbooiucez8xp.eu-west-1.rds.amazonaws.com:3306/TESTDB?autoReconnect=true&useSSL=false" ,"kieransDatabase","thisismypassword");
             // PreparedStatement to sum the votes
             //booksid = connection.prepareStatement("SELECT MAX(id) FROM book");
             read = connection.prepareStatement(
-                    "SELECT  FIRST_NAME, LAST_NAME, AGE,  SEX, INCOME FROM EMPLOYEE");
+                    "SELECT  ID, unitNum, tripLevel, tripTime, result, myDate FROM testResults");
         }
-        catch ( Exception exception ) {
+        catch ( Exception exception )
+        {
             exception.printStackTrace();
             //throw new UnavailableException( exception.getMessage() );
         }
     }
 
-    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+        ArrayList<Integer> arrli = new ArrayList<Integer>(N);
         response.setContentType( "text/html" );
         PrintWriter out = response.getWriter();
         out.println( "<?xml version = \"1.0\"?>" );
@@ -53,7 +60,8 @@ public class ServletShowResults extends HttpServlet {
         try {
             ResultSet resultSet = read.executeQuery();
             //boolean empty =resultSet.wasNull();
-            if(!resultSet.isBeforeFirst()){  //returns false when the result set is empty
+            if(!resultSet.isBeforeFirst())
+            {  //returns false when the result set is empty
                 out.print("Database records may not be created!! Please try again");
                 out.println("</pre></body></html>");
                 out.close();
@@ -65,30 +73,70 @@ public class ServletShowResults extends HttpServlet {
 
             out.println("<body>");
 
-            while (resultSet.next()) {
-                FIRST_NAME = resultSet.getString(1);
-                LAST_NAME = resultSet.getString(2);
-                AGE = resultSet.getInt(3);
-                SEX = resultSet.getString(4);
-                INCOME = resultSet.getInt(5);
-                //copyright = resultSet.getString(6);
-                //comments = resultSet.getString(7);
-                //out.print("<br>"+ "---Result table:"+idNum +"<br/>");
-               //<strong>Strong text</strong>
-                //out.print("  <strong>"+" ID:"+"</strong>"+id);
-                out.print("<br>"+" <strong>First Name:</strong>" + FIRST_NAME + "   ");
-                out.print("  <strong>Last Name:</strong>" + LAST_NAME + "   ");
-                out.print("   <strong>ISBN:</strong>" + AGE + "   ");
-                out.print("   <strong>Title:</strong>" + SEX + "   ");
-                out.print("   <strong>Copyright Number:</strong>" + INCOME + "   ");
-                //out.print("   <strong>Comments:</strong>" + comments + "   ");
-                out.print("<p></p>");
+            while (resultSet.next())
+            {  //"SELECT  ID, unitNum, tripLevel, tripTime, result, myDate FROM testResults");
+                ID = resultSet.getInt(1);
+                unitNum = resultSet.getString(2);
+                tripLevel = resultSet.getString(3);
+                tripTime = resultSet.getString(4);
+                result = resultSet.getString(5);
+                myDate = resultSet.getString(6);
+
+                String myDate1[] = myDate.split(" ");
+                arrli.add(Integer.parseInt((tripTime)));
+
+                out.print("<br>"+" <strong>ID:</strong>" + ID + "   ");
+                out.print("  <strong>Unit Number:</strong>" + unitNum + "   ");
+                out.print("  <strong>Trip Level:</strong>" + tripLevel + "   ");
+                out.print("   <strong>Trip Time:</strong>" + tripTime + "   ");
+                out.print("   <strong>Result:</strong>" + result + "   ");
+                out.print("   <strong>Date Tested:</strong>" + myDate1[0] + "   ");
+
 
             }
+            out.println("<script>\n" +
+                    "        window.onload = function () {\n" +
+                    "\n" +
+                    "            var chart = new CanvasJS.Chart(\"chartContainer\", {\n" +
+                    "                animationEnabled: true,\n" +
+                    "\n" +
+                    "                title:{\n" +
+                    "                    text:\"Unit Trip Times\"\n" +
+                    "                },\n" +
+                    "                axisX:{\n" +
+                    "                    interval: 1\n" +
+                    "                },\n" +
+                    "                axisY2:{\n" +
+                    "                    interlacedColor: \"rgba(1,77,101,.2)\",\n" +
+                    "                    gridColor: \"rgba(1,77,101,.1)\",\n" +
+                    "                    title: \"Trip time in ms\"\n" +
+                    "                },\n" +
+                    "                data: [{\n" +
+                    "                    type: \"bar\",\n" +
+                    "                    name: \"companies\",\n" +
+                    "                    axisYType: \"secondary\",\n" +
+                    "                    color: \"#014D65\",\n" +
+                    "                    dataPoints: [\n" +"");
+                    for(int i = 0; i < arrli.size(); i++) {
+                        out.print("                        { y: " + arrli.get(i) + ", label: \"UNIT NO.\" },\n" + "");
+                    }
+
+                    out.print(
+                    "                    ]\n" +
+                    "                }]\n" +
+                    "            });\n" +
+                    "            chart.render();\n" +
+                    "\n" +
+                    "        }\n" +
+                    "    </script>");
+            out.print("<p></p>");
+            out.print("<div id=\"chartContainer\" style=\"height: 370px; width: 100%;\"></div>\n" +
+                    "<script src=\"https://canvasjs.com/assets/script/canvasjs.min.js\"></script>");
             out.println("</pre></body></html>");
             out.close();
         }
-        catch (SQLException sqlException) {
+        catch (SQLException sqlException)
+        {
             sqlException.printStackTrace();
             out.println("<title>Error</title>");
             out.println("</head>");
@@ -96,17 +144,18 @@ public class ServletShowResults extends HttpServlet {
             out.println("Try again later.</p></body></html>");
             out.close();
         }
-
     }
 
     public void destroy()
     {
-        try {
+        try
+        {
             connection.close();
         }
 
         // handle database exceptions by returning error to client
-        catch( SQLException sqlException ) {
+        catch( SQLException sqlException )
+        {
             sqlException.printStackTrace();
         }
     }
