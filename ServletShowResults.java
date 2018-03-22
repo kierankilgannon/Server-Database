@@ -127,7 +127,7 @@ public class ServletShowResults extends HttpServlet {
                     "                    axisYType: \"secondary\",\n" +
                     "                    color: \"#014D65\",\n" +
                     "                    dataPoints: [\n" +"");
-                    for(int i = 0; i < arrli.size(); i++)
+                    for(int i = arrli.size()-1; i >=0; i--)
                     {
                         out.print("{ y: " + arrli.get(i) + ", label: \"UNIT NO.\" },\n" + "");
                     }
