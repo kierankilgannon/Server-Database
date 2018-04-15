@@ -1,36 +1,29 @@
-
-
 import pymysql
 import serial
 
-port = serial.Serial("/dev/ttyUSB0", baudrate=10412, timeout=15)
+port = serial.Serial("/dev/ttyUSB0", baudrate=10412, timeout=None)
 # Open database connection
 db = pymysql.connect(host='mydbinstance.cbooiucez8xp.eu-west-1.rds.amazonaws.com',user='kieransDatabase',passwd='thisismypassword',db='TESTDB')
 
 # prepare a cursor object using cursor() method
 cursor = db.cursor()
 
-# Drop table if it already exist using execute() method.
-cursor.execute("DROP TABLE IF EXISTS EMPLOYEE")
-
-# Create table as per requirement
-sql = """CREATE TABLE EMPLOYEE (
-   FIRST_NAME  CHAR(20) NOT NULL,
-   LAST_NAME  CHAR(20),
-   AGE INT,  
-   SEX CHAR(1),
-   INCOME FLOAT )"""
-
-cursor.execute(sql)
 while True:
-    rcv = port.readline()
-    print(rcv)
+    rcv=port.readline()
+    words=rcv.split(" ")
+    print(words[1])
+    print(words[4])
+    ms=int(words[1])
+    us=int(words[4])
+    ans=(ms*1.024)+(us*.0039)
+    #print("{0:.2f}".format(ans))
+    trip=str("{0:.2f}".format(ans))
 
 # Prepare SQL query to INSERT a record into the database.
-    sql = "INSERT INTO EMPLOYEE(FIRST_NAME, \
-       LAST_NAME, AGE, SEX, INCOME) \
-       VALUES ('%s', '%s', '%d', '%c', '%d' )" % \
-       ('Mac', 'Mohan', 20, 'M', int(rcv))
+    sql = "INSERT INTO testResults(unitNum, \
+    tripLevel, tripTime, result) \
+    VALUES ('%s', '%s', '%s', '%s' )" % \
+    ('2874', '30',trip,'PASS')
     try:
        # Execute the SQL command
        cursor.execute(sql)
@@ -39,6 +32,5 @@ while True:
     except:
        # Rollback in case there is any error
        db.rollback()
-
-# disconnect from server
-    db.close()
+       # disconnect from server
+       db.close()
